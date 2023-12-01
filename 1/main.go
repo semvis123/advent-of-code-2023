@@ -39,7 +39,6 @@ func sumFirstAndLast(lines []string, digitFunc func(string, int) int) string {
 	}
 
 	return fmt.Sprint(sum)
-
 }
 
 func part_1(input []string) string {
@@ -50,6 +49,10 @@ func part_1(input []string) string {
 }
 
 func wordDigitToInt(line string, i int) int {
+	if d, _ := strconv.Atoi(string(line[i])); d > 0 {
+		return d
+	}
+
 	digits := []string{
 		"one",
 		"two",
@@ -61,14 +64,13 @@ func wordDigitToInt(line string, i int) int {
 		"eight",
 		"nine",
 	}
-	if d, _ := strconv.Atoi(string(line[i])); d > 0 {
-		return d
-	}
+
 	for di, digit := range digits {
 		if strings.Index(line[i:], digit) == 0 {
 			return di + 1
 		}
 	}
+
 	return 0
 }
 
