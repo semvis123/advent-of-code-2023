@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"log"
-	"os"
 	"regexp"
+	"semvis123/aoc"
 	"strconv"
 	"strings"
 
@@ -12,12 +12,7 @@ import (
 )
 
 func main() {
-	filename := "input.txt"
-	file, err := os.ReadFile(filename)
-	if err != nil {
-		log.Panic(err)
-	}
-	lines := strings.Split(string(file), "\n")
+	lines := aoc.GetInput()
 
 	log.Printf("part 1: %d", part_1(lines))
 	log.Printf("part 2: %d", part_2(lines))
@@ -92,11 +87,7 @@ func part_2(input []string) int {
 			}
 		}
 		values := maps.Values(bag)
-		power := values[0]
-		for _, v := range values[1:] {
-			power *= v
-		}
-		sum += power
+		sum += aoc.Multiply(values)
 	}
 	return sum
 }

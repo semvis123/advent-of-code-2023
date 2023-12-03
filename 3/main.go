@@ -2,22 +2,15 @@ package main
 
 import (
 	"log"
-	"os"
+	"semvis123/aoc"
 	"strconv"
-	"strings"
 	"unicode"
 
 	"golang.org/x/exp/slices"
 )
 
 func main() {
-	filename := "input.txt"
-	file, err := os.ReadFile(filename)
-	if err != nil {
-		log.Panic(err)
-	}
-	lines := strings.Split(string(file), "\n")
-
+	lines := aoc.GetInput()
 	log.Printf("part 1: %d", part_1(lines))
 	log.Printf("part 2: %d", part_2(lines))
 }
@@ -55,11 +48,7 @@ func part_1(input []string) int {
 			adjecend = false
 		}
 	}
-	s := 0
-	for _, n := range numbers {
-		s += n
-	}
-	return s
+	return aoc.Sum(numbers)
 }
 
 func part_2(input []string) int {

@@ -3,19 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
+	"semvis123/aoc"
 	"strconv"
 	"strings"
 )
 
 func main() {
-	filename := "input.txt"
-	file, err := os.ReadFile(filename)
-	if err != nil {
-		log.Panic(err)
-	}
-	lines := strings.Split(string(file), "\n")
-
+	lines := aoc.GetInput()
 	log.Printf("part 1: %s", part_1(lines))
 	log.Printf("part 2: %s", part_2(lines))
 }
@@ -43,8 +37,7 @@ func sumFirstAndLast(lines []string, digitFunc func(string, int) int) string {
 
 func part_1(input []string) string {
 	return sumFirstAndLast(input, func(line string, i int) int {
-		d, _ := strconv.Atoi(string(line[i]))
-		return d
+		return aoc.NoErr(strconv.Atoi(string(line[i])))
 	})
 }
 
