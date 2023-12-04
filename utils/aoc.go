@@ -2,6 +2,7 @@ package aoc
 
 import (
 	"flag"
+	"math"
 	"os"
 	"strings"
 
@@ -42,6 +43,12 @@ func Unpack[T any](s []T, vars ...*T) {
 	}
 }
 
+func Wrap[A any, B any, C any](a func(A) B, b func(C) A) func(C) B {
+	return func(c C) B {
+		return a(b(c))
+	}
+}
+
 func Must[T any](v T, err error) T {
 	if err != nil {
 		panic(err)
@@ -49,8 +56,33 @@ func Must[T any](v T, err error) T {
 	return v
 }
 
+func WrapMust[A any, B any, T func(B) (A, error)](f T) func(B) A {
+	return func(param B) A {
+		return Must(f(param))
+	}
+}
+
 func NoErr[T any](v T, err error) T {
 	return v
+}
+
+func Filter[A any](items []A, f func(A) bool) []A {
+	var result []A
+	for _, v := range items {
+		if f(v) {
+			result = append(result, v)
+		}
+	}
+
+	return result
+}
+
+func PowInt(x, y int) int {
+	return int(math.Pow(float64(x), float64(y)))
+}
+
+func NotEmpty(v string) bool {
+	return len(v) > 0
 }
 
 func Map[A any, B any](items []A, f func(A) B) []B {
