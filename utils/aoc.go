@@ -49,6 +49,24 @@ func Wrap[A any, B any, C any](a func(A) B, b func(C) A) func(C) B {
 	}
 }
 
+func Chunks[T any](slice []T, chunkSize int) [][]T {
+	var chunks [][]T
+	for {
+		if len(slice) == 0 {
+			break
+		}
+
+		if len(slice) < chunkSize {
+			chunkSize = len(slice)
+		}
+
+		chunks = append(chunks, slice[0:chunkSize])
+		slice = slice[chunkSize:]
+	}
+
+	return chunks
+}
+
 func Must[T any](v T, err error) T {
 	if err != nil {
 		panic(err)
@@ -81,8 +99,20 @@ func PowInt(x, y int) int {
 	return int(math.Pow(float64(x), float64(y)))
 }
 
+func AbsInt(x int) int {
+	return int(math.Abs(float64(x)))
+}
+
+func MaxInt(x, y int) int {
+	return int(math.Max(float64(x), float64(y)))
+}
+
 func NotEmpty(v string) bool {
 	return len(v) > 0
+}
+
+func CastNum[A, B constraints.Integer](x A) B {
+	return B(x)
 }
 
 func Map[A any, B any](items []A, f func(A) B) []B {
