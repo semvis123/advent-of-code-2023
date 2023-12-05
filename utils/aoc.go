@@ -9,10 +9,14 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+var testing bool
+
 func GetInput() []string {
-	testFlag := flag.Bool("test", false, "Use test file")
-	flag.Parse()
-	filename := Iff(*testFlag, "test.txt", "input.txt")
+	if !flag.Parsed() {
+		flag.BoolVar(&testing, "test", false, "Use test file")
+		flag.Parse()
+	}
+	filename := Iff(testing, "test.txt", "input.txt")
 	file := Must(os.ReadFile(filename))
 	lines := strings.Split(string(file), "\n")
 	return lines
