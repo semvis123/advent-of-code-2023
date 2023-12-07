@@ -29,6 +29,26 @@ func Iff[T any](check bool, ifV T, elseV T) T {
 	return elseV
 }
 
+func Count[T constraints.Ordered](slice []T, el T) int {
+	var count int
+	for _, s := range slice {
+		if s == el {
+			count++
+		}
+	}
+	return count
+}
+
+func CountFunc[T constraints.Ordered](slice []T, f func(T) bool) int {
+	var count int
+	for _, s := range slice {
+		if f(s) {
+			count++
+		}
+	}
+	return count
+}
+
 type summable interface {
 	constraints.Integer | constraints.Float | constraints.Complex
 }
@@ -126,6 +146,17 @@ func Map[A any, B any](items []A, f func(A) B) []B {
 	}
 
 	return result
+}
+
+func Flatten[A any](items [][]A) (result []A) {
+	for _, v := range items {
+		result = append(result, v...)
+	}
+	return
+}
+
+func FlatMap[A any, B any](items []A, f func(A) []B) []B {
+	return Flatten(Map(items, f))
 }
 
 func Reduce[T any](items []T, f func(curr T, acc T) T) T {
