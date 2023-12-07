@@ -50,39 +50,29 @@ func getHandTypeOfCards(cardsN int, maxCount int) int {
 	return t
 }
 
-func getHandType1(cards []int) int {
-	var counts []int
-	var used []int
-	for _, c := range cards {
-		if !slices.Contains(used, c) {
-			count := aoc.Count(cards, c)
-			counts = append(counts, count)
-			used = append(used, c)
+func getHandTypeF(withJoker bool) func(cards []int) int {
+	return func(cards []int) int {
+		var counts []int
+		var used []int
+		joker := 0
+		for _, c := range cards {
+			if c == 1 && withJoker {
+				joker++
+				continue
+			}
+			if !slices.Contains(used, c) {
+				count := aoc.Count(cards, c)
+				counts = append(counts, count)
+				used = append(used, c)
+			}
 		}
-	}
-	maxCount := slices.Max(counts)
-	return getHandTypeOfCards(len(counts), maxCount)
-}
 
-func getHandType2(cards []int) int {
-	var counts []int
-	var used []int
-	joker := 0
-	for _, c := range cards {
-		if c == 1 {
-			joker++
-			continue
+		maxCount := slices.Max(aoc.Iff(len(counts) == 0, []int{0}, counts))
+		if withJoker {
+			maxCount += joker
 		}
-		if !slices.Contains(used, c) {
-			count := aoc.Count(cards, c)
-			counts = append(counts, count)
-			used = append(used, c)
-		}
+		return getHandTypeOfCards(len(counts), maxCount)
 	}
-
-	maxCount := slices.Max(aoc.Iff(len(counts) == 0, []int{0}, counts))
-	maxCount += joker
-	return getHandTypeOfCards(len(counts), maxCount)
 }
 
 func readHands(input []string, order []string, handF func([]int) int) (hands []Hand) {
@@ -129,25 +119,24 @@ func orderHands(hands []Hand) []Hand {
 	return hands
 }
 
-func part_1(input []string) (s int) {
-	hands := readHands(input, order1, getHandType1)
-	hands = orderHands(hands)
-
+func total(hands []Hand) int {
 	var sum int
 	for i, h := range hands {
 		sum += h.Bidding * (i + 1)
 	}
-
 	return sum
 }
 
-func part_2(input []string) int {
-	hands := readHands(input, order2, getHandType2)
+func part_1(input []string) (s int) {
+	hands := readHands(input, order1, getHandTypeF(false))
 	hands = orderHands(hands)
 
-	var sum int
-	for i, h := range hands {
-		sum += h.Bidding * (i + 1)
-	}
-	return sum
+	return total(hands)
+}
+
+func part_2(input []string) int {
+	hands := readHands(input, order2, getHandTypeF(true))
+	hands = orderHands(hands)
+
+	return total(hands)
 }
