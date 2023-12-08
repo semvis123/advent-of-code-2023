@@ -199,3 +199,178 @@ func Directions(diagonal bool, center bool) [][]int {
 	}
 	return dirs
 }
+
+type number interface {
+	constraints.Integer | constraints.Float
+}
+
+func Abs[T number](x T) T {
+	return T(math.Abs(float64(x)))
+}
+
+func Pow[T number](x T, y T) T {
+	return T(math.Pow(float64(x), float64(y)))
+}
+
+func Sqrt[T number](x T) T {
+	return T(math.Sqrt(float64(x)))
+}
+
+func PowSqrt[T number](nums ...T) T {
+	var s T
+	for _, n := range nums {
+		s += Pow(n, 2)
+	}
+	return Sqrt(s)
+}
+
+func GCD[T constraints.Integer](a, b T) T {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+func RemoveIndex[T any](s []T, index int) []T {
+	ret := make([]T, 0)
+	ret = append(ret, s[:index]...)
+	return append(ret, s[index+1:]...)
+}
+
+func LCM[T constraints.Integer](a, b T, integers ...T) T {
+	result := a * b / GCD(a, b)
+
+	for i := 0; i < len(integers); i++ {
+		result = LCM(result, integers[i])
+	}
+
+	return result
+}
+
+type Coord[T number] interface {
+	Euclidean(Coord[T]) T
+}
+
+type Line[T number, C Coord[T]] struct {
+	Start, End C
+}
+
+func (l Line[T, C]) Length() T {
+	return l.Start.Euclidean(l.End)
+}
+
+type line1d[T number] struct {
+	Line[T, Coord1d[T]]
+}
+
+func (a line1d[T]) OverlapAndDifference(b line1d[T]) (overlap line1d[T], difference []line1d[T]) {
+	// if b.Start.X < a.End.X && b.End.X > a.Start.X {
+	// 	// overlap
+	// 	excluded := T(0)
+	// 	if a.Start.X < b.End.X {
+	// 		// before
+	// 		difference = append(difference, line1d[T]{
+	// 			Line: Line[T, Coord1d[T]]{
+	// 				Coord1d[T]{a.Start.X}, Coord1d[T]{b.Start.X},
+	// 			},
+	// 		},
+	// 		)
+	// 		excluded += b.Start.X - a.Start.X
+	// 	}
+	// 	if b.End.X <= a.End.X {
+	// 		// after
+	// 		difference = append(difference, []int{b.End.X, a.End.X})
+	// 		excluded += end - (m.Src + m.Range)
+	// 	}
+	// 	changed = []int{m.Dest + aoc.MaxInt(0, start-m.Src), x[1] - excluded}
+	// } else {
+	// 	difference = [][]int{x}
+	// }
+	return
+}
+
+type Coord1d[T number] struct {
+	X T
+}
+
+type Coord2d[T number] struct {
+	X, Y T
+}
+
+type Coord3d[T number] struct {
+	X, Y, Z T
+}
+
+func (a Coord1d[T]) Add(b Coord[T]) Coord[T] {
+	B := b.(Coord1d[T])
+	return Coord1d[T]{
+		X: a.X + B.X,
+	}
+}
+
+func (a Coord2d[T]) Add(b Coord[T]) Coord[T] {
+	B := b.(Coord2d[T])
+	return Coord2d[T]{
+		X: a.X + B.X,
+		Y: a.Y + B.Y,
+	}
+}
+
+func (a Coord3d[T]) Add(b Coord[T]) Coord[T] {
+	B := b.(Coord3d[T])
+	return Coord3d[T]{
+		X: a.X + B.X,
+		Y: a.Y + B.Y,
+		Z: a.Z + B.Z,
+	}
+}
+
+func (a Coord1d[T]) Substract(b Coord[T]) Coord[T] {
+	B := b.(Coord1d[T])
+	return Coord1d[T]{
+		X: a.X - B.X,
+	}
+}
+
+func (a Coord2d[T]) Substract(b Coord[T]) Coord[T] {
+	B := b.(Coord2d[T])
+	return Coord2d[T]{
+		X: a.X - B.X,
+		Y: a.Y - B.Y,
+	}
+}
+
+func (a Coord3d[T]) Substract(b Coord[T]) Coord[T] {
+	B := b.(Coord3d[T])
+	return Coord3d[T]{
+		X: a.X - B.X,
+		Y: a.Y - B.Y,
+		Z: a.Z - B.Z,
+	}
+}
+
+func (a Coord1d[T]) Euclidean(b Coord[T]) T {
+	return PowSqrt(a.X - b.(Coord1d[T]).X)
+}
+
+func (a Coord2d[T]) Euclidean(b Coord[T]) T {
+	return PowSqrt(a.X-b.(Coord2d[T]).X, a.Y-b.(Coord2d[T]).Y)
+}
+
+func (a Coord3d[T]) Euclidean(b Coord[T]) T {
+	return PowSqrt(a.X-b.(Coord3d[T]).X, a.Y-b.(Coord3d[T]).Y, a.Z-b.(Coord3d[T]).Z)
+}
+
+func (a Coord1d[T]) Manhatten(b Coord[T]) T {
+	return Abs(a.X - b.(Coord1d[T]).X)
+}
+
+func (a Coord2d[T]) Manhatten(b Coord[T]) T {
+	return Abs(a.X-b.(Coord2d[T]).X) + Abs(a.Y-b.(Coord2d[T]).Y)
+}
+
+func (a Coord3d[T]) Manhatten(b Coord[T]) T {
+	return Abs(a.X-b.(Coord3d[T]).X) + Abs(a.Y-b.(Coord3d[T]).Y) + Abs(a.Z-b.(Coord3d[T]).Z)
+}
