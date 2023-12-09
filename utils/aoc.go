@@ -39,6 +39,15 @@ func Count[T constraints.Ordered](slice []T, el T) int {
 	return count
 }
 
+func AllV[T constraints.Ordered](slice []T, el T) bool {
+	for _, s := range slice {
+		if s != el {
+			return false
+		}
+	}
+	return true
+}
+
 func CountFunc[T constraints.Ordered](slice []T, f func(T) bool) int {
 	var count int
 	for _, s := range slice {
