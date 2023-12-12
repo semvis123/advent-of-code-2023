@@ -128,6 +128,17 @@ func Filter[A any](items []A, f func(A) bool) []A {
 	return result
 }
 
+func FilterI[A any](items []A, f func(A, int) bool) []A {
+	var result []A
+	for i, v := range items {
+		if f(v, i) {
+			result = append(result, v)
+		}
+	}
+
+	return result
+}
+
 func PowInt(x, y int) int {
 	return int(math.Pow(float64(x), float64(y)))
 }
