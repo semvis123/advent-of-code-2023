@@ -22,6 +22,22 @@ func GetInput() []string {
 	return lines
 }
 
+func SplitByEmpty(input []string) (output [][]string) {
+	var temp []string
+	for _, l := range input {
+		if len(l) == 0 {
+			output = append(output, temp)
+			temp = nil
+		} else {
+			temp = append(temp, l)
+		}
+	}
+	if len(temp) > 0 {
+		output = append(output, temp)
+	}
+	return output
+}
+
 func Iff[T any](check bool, ifV T, elseV T) T {
 	if check {
 		return ifV
@@ -46,6 +62,42 @@ func AllV[T constraints.Ordered](slice []T, el T) bool {
 		}
 	}
 	return true
+}
+
+func ReverseCopy[T any](array []T) []T {
+	length := len(array)
+	result := make([]T, length)
+	for i, elem := range array {
+		result[length-1-i] = elem
+	}
+	return result
+}
+
+func Transpose[T any](slice [][]T) [][]T {
+	xl := len(slice[0])
+	yl := len(slice)
+	result := make([][]T, xl)
+	for i := range result {
+		result[i] = make([]T, yl)
+	}
+	for i := 0; i < xl; i++ {
+		for j := 0; j < yl; j++ {
+			result[i][j] = slice[j][i]
+		}
+	}
+	return result
+}
+
+func TransposeStrs(s []string) []string {
+	return Map(
+		Transpose(
+			Map(s, func(s string) []string {
+				return strings.Split(s, "")
+			}),
+		), func(s []string) string {
+			return strings.Join(s, "")
+		},
+	)
 }
 
 func CountFunc[T constraints.Ordered](slice []T, f func(T) bool) int {
