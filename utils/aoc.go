@@ -375,6 +375,10 @@ type Coord3d[T number] struct {
 	X, Y, Z T
 }
 
+func (a Coord2d[T]) IsZero() bool {
+	return a.X == 0 && a.Y == 0
+}
+
 func (a Coord1d[T]) Add(b Coord[T]) Coord[T] {
 	B := b.(Coord1d[T])
 	return Coord1d[T]{
