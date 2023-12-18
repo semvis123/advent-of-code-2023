@@ -44,8 +44,6 @@ func calcArea(digs []dig) int {
 	t := 0
 	for i := 0; i < len(coords)-1; i++ {
 		t += coords[i].X * coords[i+1].Y
-	}
-	for i := 0; i < len(coords)-1; i++ {
 		t -= coords[i].Y * coords[i+1].X
 	}
 
