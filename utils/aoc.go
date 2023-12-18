@@ -165,8 +165,21 @@ func WrapMust[A any, B any, T func(B) (A, error)](f T) func(B) A {
 	}
 }
 
-func NoErr[T any](v T, err error) T {
+func NoErr[T any](v T, err any) T {
 	return v
+}
+
+func GetBounds(coords []Coord2d[int]) (Coord2d[int], Coord2d[int]) {
+	ma := Coord2d[int]{}
+	mi := Coord2d[int]{}
+
+	for _, x := range coords {
+		ma.X = MaxInt(x.X, ma.X)
+		ma.Y = MaxInt(x.Y, ma.Y)
+		mi.X = MinInt(x.X, mi.X)
+		mi.Y = MinInt(x.Y, mi.Y)
+	}
+	return mi, ma
 }
 
 func Filter[A any](items []A, f func(A) bool) []A {
@@ -201,6 +214,10 @@ func AbsInt(x int) int {
 
 func MaxInt(x, y int) int {
 	return int(math.Max(float64(x), float64(y)))
+}
+
+func MinInt(x, y int) int {
+	return int(math.Min(float64(x), float64(y)))
 }
 
 func NotEmpty(v string) bool {
@@ -391,6 +408,13 @@ func (a Coord2d[T]) Add(b Coord[T]) Coord[T] {
 	return Coord2d[T]{
 		X: a.X + B.X,
 		Y: a.Y + B.Y,
+	}
+}
+
+func (a Coord2d[T]) Scale(s T) Coord[T] {
+	return Coord2d[T]{
+		X: a.X * s,
+		Y: a.Y * s,
 	}
 }
 
