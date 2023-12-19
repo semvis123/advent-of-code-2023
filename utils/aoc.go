@@ -128,6 +128,14 @@ func Unpack[T any](s []T, vars ...*T) {
 	}
 }
 
+func Unpack2[T any](s []T) (T, T) {
+	return s[0], s[1]
+}
+
+func Ptr[T any](v T) *T {
+	return &v
+}
+
 func Wrap[A any, B any, C any](a func(A) B, b func(C) A) func(C) B {
 	return func(c C) B {
 		return a(b(c))
