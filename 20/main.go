@@ -63,11 +63,41 @@ func (c *Controller) Tick() bool {
 	return c.toSend.Size() > 0 && !c.shouldStop
 }
 
-func NewController() Controller {
+func NewController(input []string) Controller {
 	controller := Controller{}
 	controller.modules = make(map[string]Module)
 	controller.toSend = lane.NewQueue[Pulse]()
 	controller.rxBits = make(map[string]int)
+
+	for _, l := range input {
+		nameStr, outputs, _ := strings.Cut(l, " -> ")
+		if name, ok := strings.CutPrefix(nameStr, "%"); ok {
+			mod := FlipFlop{name: name, outputs: strings.Split(outputs, ", ")}
+			mod.c = controller
+			controller.modules[name] = &mod
+		}
+		if name, ok := strings.CutPrefix(nameStr, "&"); ok {
+			mod := Conjuctor{name: name, outputs: strings.Split(outputs, ", ")}
+			mod.c = controller
+			mod.vals = make(map[string]bool)
+			controller.modules[name] = &mod
+		}
+		if nameStr == "broadcaster" {
+			mod := Broadcaster{name: nameStr, outputs: strings.Split(outputs, ", ")}
+			mod.c = controller
+			controller.modules[nameStr] = &mod
+		}
+	}
+
+	for name, mod := range controller.modules {
+		for _, o := range mod.getOutputs() {
+			oMod := controller.modules[o]
+			if conj, ok := oMod.(*Conjuctor); ok {
+				conj.vals[name] = false
+			}
+		}
+	}
+
 	return controller
 }
 
@@ -126,36 +156,7 @@ func (f *Conjuctor) getOutputs() []string {
 }
 
 func part_1(input []string) (s int) {
-	controller := NewController()
-
-	for _, l := range input {
-		nameStr, outputs, _ := strings.Cut(l, " -> ")
-		if name, ok := strings.CutPrefix(nameStr, "%"); ok {
-			mod := FlipFlop{name: name, outputs: strings.Split(outputs, ", ")}
-			mod.c = controller
-			controller.modules[name] = &mod
-		}
-		if name, ok := strings.CutPrefix(nameStr, "&"); ok {
-			mod := Conjuctor{name: name, outputs: strings.Split(outputs, ", ")}
-			mod.c = controller
-			mod.vals = make(map[string]bool)
-			controller.modules[name] = &mod
-		}
-		if nameStr == "broadcaster" {
-			mod := Broadcaster{name: nameStr, outputs: strings.Split(outputs, ", ")}
-			mod.c = controller
-			controller.modules[nameStr] = &mod
-		}
-	}
-
-	for name, mod := range controller.modules {
-		for _, o := range mod.getOutputs() {
-			oMod := controller.modules[o]
-			if conj, ok := oMod.(*Conjuctor); ok {
-				conj.vals[name] = false
-			}
-		}
-	}
+	controller := NewController(input)
 
 	for i := 0; i < 1000; i++ {
 		controller.Send("button", false, []string{"broadcaster"})
@@ -167,36 +168,7 @@ func part_1(input []string) (s int) {
 }
 
 func part_2(input []string) (s int) {
-	controller := NewController()
-
-	for _, l := range input {
-		nameStr, outputs, _ := strings.Cut(l, " -> ")
-		if name, ok := strings.CutPrefix(nameStr, "%"); ok {
-			mod := FlipFlop{name: name, outputs: strings.Split(outputs, ", ")}
-			mod.c = controller
-			controller.modules[name] = &mod
-		}
-		if name, ok := strings.CutPrefix(nameStr, "&"); ok {
-			mod := Conjuctor{name: name, outputs: strings.Split(outputs, ", ")}
-			mod.c = controller
-			mod.vals = make(map[string]bool)
-			controller.modules[name] = &mod
-		}
-		if nameStr == "broadcaster" {
-			mod := Broadcaster{name: nameStr, outputs: strings.Split(outputs, ", ")}
-			mod.c = controller
-			controller.modules[nameStr] = &mod
-		}
-	}
-
-	for name, mod := range controller.modules {
-		for _, o := range mod.getOutputs() {
-			oMod := controller.modules[o]
-			if conj, ok := oMod.(*Conjuctor); ok {
-				conj.vals[name] = false
-			}
-		}
-	}
+	controller := NewController(input)
 
 	for !controller.shouldStop {
 		controller.buttonPress++
