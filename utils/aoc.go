@@ -426,6 +426,32 @@ func (a Coord2d[T]) Scale(s T) Coord[T] {
 	}
 }
 
+func (a Coord2d[T]) StepsTo(b Coord2d[T]) (steps []Coord2d[T]) {
+	steps = append(steps, a)
+	for a != b {
+		dir := Coord2d[int]{}
+		if a.X > b.X {
+			dir.X = -1
+		}
+		if a.Y > b.Y {
+			dir.X = 0
+			dir.Y = -1
+		}
+		if a.X < b.X {
+			dir.X = 1
+			dir.Y = 0
+		}
+		if a.Y < b.Y {
+			dir.X = 0
+			dir.Y = 1
+		}
+		a.X += T(dir.X)
+		a.Y += T(dir.Y)
+		steps = append(steps, a)
+	}
+	return steps
+}
+
 func (a Coord3d[T]) Add(b Coord[T]) Coord[T] {
 	B := b.(Coord3d[T])
 	return Coord3d[T]{
